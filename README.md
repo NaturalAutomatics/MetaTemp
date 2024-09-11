@@ -14,3 +14,19 @@ and feel the magic
 Peltier elements making this possible
 
 
+## Project Main Parts
+
+1) MetaTemp Controller Unit
+The device connected to the MetaTemp Magic Handle placed on the Oculus Touch controllers wich controls the Peltier
+It's the main physical device we interract with to actually set teh temperature
+
+2) MetaTemp Driver 
+The driver app getting data from Steam VR and sending it to the Controller Unit
+
+3) MetaTemp Mod
+Half-Life Alyx mod which allows you to feel the temperature of the metaverse
+It contains of the maps with different objects where you can try you new ability to feel the temperature of virtual objects
+
+
+
+
