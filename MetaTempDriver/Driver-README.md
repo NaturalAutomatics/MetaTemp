@@ -22,10 +22,6 @@ Follow these steps to build and run the MetaTempDriver project:
 
 1. **Clone the repository**
 
-Copy
-
-Insert at cursor
-markdown
 git clone https://github.com/NaturalAutomatics/MetaTemp
 cd MetaTemp/MetaTempDriver
 
