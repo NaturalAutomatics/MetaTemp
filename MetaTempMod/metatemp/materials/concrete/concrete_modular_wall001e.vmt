@@ -1,0 +1,16 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "Concrete/3_concrete_medium"
+	"$surfaceprop" "concrete"
+	"%keywords" "portal"
+
+	"$bumpmap" "concrete/3_concrete_medium_bump"
+	"$ssbump" "1"
+
+        	"$detail" "concrete\5_concrete_cracks_detail"
+	"$detailscale" "3.25"
+	"$detailblendfactor" 0.25
+	"$detailblendmode" 0
+}
+
+

@@ -1,4 +1,25 @@
-#include <openvr.h>
+/*
+
+  __  __      _      _____                    
+ |  \/  | ___| |_ __|_   _|__ _ __ ___  _ __  
+| |\/| |/ _ \ __/ _ \| |/ _ \ '_ ` _ \| '_ \ 
+| |  | |  __/ ||  __/| |  __/ | | | | | |_) |
+|_|  |_|\___|\__\___||_|\___|_| |_| |_| .__/ 
+                                      |_|    
+ ____       _                
+|  _ \ _ __(_)_   _____ _ __ 
+| | | | '__| \ \ / / _ \ '__|
+| |_| | |  | |\ V /  __/ |   
+|____/|_|  |_| \_/ \___|_|   
+                             
+
+                             
+
+September 13th 2024 By Alex Noyanov
+*/
+
+
+#include <C:\Users\Alex\Documents\Work\OpenVR-git\openvr\headers\openvr.h>
 
 class ObjectTemperatureController
 {
