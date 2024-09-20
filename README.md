@@ -1,6 +1,6 @@
 <img width="863" alt="MainLogo-MTP" src="https://github.com/user-attachments/assets/33caecdc-602e-4065-adb3-4cc5c5ac0fb4">
 
-# MetaTemp
+# Welcome to MetaTemp project!
 Feel the temperature of the Metaverse with MetaTemp
 
 ## About the project
