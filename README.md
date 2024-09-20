@@ -1,3 +1,5 @@
+![Uploading Снимок экрана 2022-07-03 в 0.34.05.png…]()
+
 # MetaTemp
 Feel the temperature of the Metaverse with MetaTemp
 
