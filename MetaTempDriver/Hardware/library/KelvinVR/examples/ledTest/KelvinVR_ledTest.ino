@@ -2,6 +2,9 @@
 
 KelvinVR kelvinVR;
 
+#define MIN_BRIGHTNESS 0
+#define MAX_BRIGHTNESS 255
+
 int buzzer = 37;
 int greenLed = 10;
 int redLed = 11;
@@ -31,7 +34,7 @@ void fadeEffect(int led)
   brightness = brightness + fadeAmount;
 
   // reverse the direction of the fading at the ends of the fade:
-  if (brightness <= 0 || brightness >= 255)
+  if (brightness <= MIN_BRIGHTNESS || brightness >= MAX_BRIGHTNESS)
   {
     fadeAmount = -fadeAmount;
   }
