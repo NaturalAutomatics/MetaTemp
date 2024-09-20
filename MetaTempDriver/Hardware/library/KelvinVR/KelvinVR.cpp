@@ -9,6 +9,8 @@
 
 
 */
+#define MIN_BRIGHTNESS 0
+#define MAX_BRIGHTNESS 255
 
 #include "KelvinVRESP32.hpp"
 
@@ -56,7 +58,7 @@ void Kelvin::fadeEffect(int led)
   _brightness = _brightness + _fadeAmount;
 
   // reverse the direction of the fading at the ends of the fade:
-  if (_brightness <= 0 || _brightness >= 255)
+  if (_brightness <= MIN_BRIGHTNESS || _brightness >= MAX_BRIGHTNESS)
   {
     _fadeAmount = -_fadeAmount;
   }
