@@ -1,7 +1,7 @@
 #ifndef KELVIN_VR_ESP32_H
 #define KELVIN_VR_ESP32_H
 
-#include "../KelvinVRBase.hpp"
+#include "KelvinVRBase.hpp"
 
 class KelvinVRESP32 : public KelvinVRBase
 {
