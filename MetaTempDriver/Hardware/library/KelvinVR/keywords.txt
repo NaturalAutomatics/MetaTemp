@@ -1,0 +1,29 @@
+#######################################
+# Syntax Coloring Map For KelvinVR
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+KelvinVR	KEYWORD1
+Kelvin	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+blinkLed	KEYWORD2
+ledOff	KEYWORD2
+fullPinSetup	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+buzzer	LITERAL1
+greenLed	LITERAL1
+redLed	LITERAL1
+ledPlus	LITERAL1
+ledMinus	LITERAL1

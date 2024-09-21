@@ -1,4 +1,4 @@
-#include "KelvinVRESP32.h"
+#include "KelvinVRESP32.hpp"
 
 void KelvinVRESP32::begin()
 {

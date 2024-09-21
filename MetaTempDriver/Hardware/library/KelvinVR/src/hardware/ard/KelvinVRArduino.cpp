@@ -1,4 +1,4 @@
-#include "KelvinVRArduino.h"
+#include "KelvinVRArduino.hpp"
 
 void KelvinVRArduino::begin()
 {
