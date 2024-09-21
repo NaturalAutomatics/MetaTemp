@@ -1,7 +1,7 @@
 #ifndef KELVIN_VR_ARDUINO_H
 #define KELVIN_VR_ARDUINO_H
 
-#include "../KelvinVRBase.hpp"
+#include "KelvinVRBase.hpp"
 
 class KelvinVRArduino : public KelvinVRBase
 {

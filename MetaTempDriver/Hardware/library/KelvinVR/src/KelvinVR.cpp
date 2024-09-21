@@ -12,33 +12,49 @@
 #define MIN_BRIGHTNESS 0
 #define MAX_BRIGHTNESS 255
 
-#include "KelvinVRESP32.hpp"
-
-void KelvinVRESP32::begin()
-{
-  // ESP32-specific initialization
-}
-
-void KelvinVRESP32::update()
-{
-  // ESP32-specific update logic
-}
-
-// Implement other functions
-
+#include <Arduino.h>
 #include "KelvinVR.h"
 
-Kelvin::Kelvin(string modelName)
+Kelvin::Kelvin(const String &modelName)
 {
   _modelName = modelName;
 }
 
 void Kelvin::fullPinSetup()
 {
-  for (int i = 0; i < sizeof(pinsOutput); i++)
+  for (int i = 0; i < sizeof(this->_pinsOutput) / sizeof(this->_pinsOutput[0]); i++)
   {
-    pinMode(pinsOutput[i], OUTPUT);
+    pinMode(this->_pinsOutput[i], OUTPUT);
   }
+
+  // Setup Peltier control pins
+  pinMode(_peltierEnablePin, OUTPUT);
+  pinMode(_peltierIn1Pin, OUTPUT);
+  pinMode(_peltierIn2Pin, OUTPUT);
+
+  // Initially stop the Peltier
+  stopThermalControl();
+}
+
+void Kelvin::startCooling(int intensity)
+{
+  analogWrite(_peltierEnablePin, intensity);
+  digitalWrite(_peltierIn1Pin, HIGH);
+  digitalWrite(_peltierIn2Pin, LOW);
+}
+
+void Kelvin::startHeating(int intensity)
+{
+  analogWrite(_peltierEnablePin, intensity);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, HIGH);
+}
+
+void Kelvin::stopThermalControl()
+{
+  digitalWrite(_peltierEnablePin, LOW);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, LOW);
 }
 
 void Kelvin::blinkLed(int ledPin)
@@ -52,7 +68,7 @@ void Kelvin::blinkLed(int ledPin)
 void Kelvin::fadeEffect(int led)
 {
   // set the brightness of pin 9:
-  analogWrite(led, brightness);
+  analogWrite(led, _brightness);
 
   // change the brightness for next time through the loop:
   _brightness = _brightness + _fadeAmount;
@@ -75,6 +91,7 @@ void Kelvin::ledOn()
 void Kelvin::ledOff()
 {
   digitalWrite(ledPlus, LOW);
+  digitalWrite(ledMinus, LOW);
 }
 
 void Kelvin::blinkFront(int delayTime)
