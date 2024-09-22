@@ -1,11 +1,46 @@
 /*
   KelvinVR Mk1-Alpha test module: Arduino Mega Original 2560
+  Main class for KelvinVR Library
 
-  Front LED connection:
+  Arduino Mega 2560
+  ___________________
+   |  ___________  USB |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |___________|     |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+   | D | D | D | D | D | D | . | . | . | . | D |
+   | 8 | 9 | 1 | 1 | 1 | 1 |   |   |   |   | 3 |
+   |   |   | 0 | 1 | 2 | 3 |   |   |   |   | 7 |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               Buzzer
+   |   |   |   |   |   |
+   |   |   |   |   |   +-- Not used
+   |   |   |   |   |
+   |   |   |   |   +-- Not used
+   |   |   |   |
+   |   |   |   +-- Red LED
+   |   |   |
+   |   |   +-- Green LED
+   |   |
+   |   +-- LED+ (Fading LED Blue)
+   |
+   +-- LED- (Fading LED Blue)
 
-  RGLed inside:
+Note: Pins 9, 10, and 11 support PWM for LED brightness control
 
-  Motor Shield connections:
 
 
 */
