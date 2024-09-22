@@ -67,6 +67,9 @@ public:
 	void startCooling(int intensity = 255);
 	void startHeating(int intensity = 255);
 	void stopThermalControl();
+	void runThermalCycle(bool isCooling, int intensity, int durationSeconds);
+	void stopCooling();
+	void stopHeating();
 
 protected:
 	String _modelName;

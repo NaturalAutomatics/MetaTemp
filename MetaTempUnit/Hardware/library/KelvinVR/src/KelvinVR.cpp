@@ -85,6 +85,20 @@ void Kelvin::startHeating(int intensity)
   digitalWrite(_peltierIn2Pin, HIGH);
 }
 
+void Kelvin::stopCooling()
+{
+  digitalWrite(_peltierEnablePin, LOW);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, LOW);
+}
+
+void Kelvin::stopHeating()
+{
+  digitalWrite(_peltierEnablePin, LOW);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, LOW);
+}
+
 void Kelvin::stopThermalControl()
 {
   digitalWrite(_peltierEnablePin, LOW);
@@ -135,4 +149,41 @@ void Kelvin::blinkFront(int delayTime)
   delay(delayTime);
   digitalWrite(ledPlus, LOW);
   delay(delayTime);
+}
+
+void Kelvin::runThermalCycle(bool isCooling, int intensity, int durationSeconds)
+{
+  if (isCooling)
+  {
+    Serial.println("Starting cooling cycle...");
+    startCooling(intensity);
+  }
+  else
+  {
+    Serial.println("Starting heating cycle...");
+    startHeating(intensity);
+  }
+
+  ledOn(); // Turn on LED to indicate active cycle
+
+  for (int i = 0; i < durationSeconds; i++)
+  {
+    Serial.print(isCooling ? "Cooling: " : "Heating: ");
+    Serial.print(i + 1);
+    Serial.println(" seconds");
+    delay(1000);
+  }
+
+  ledOff(); // Turn off LED
+
+  if (isCooling)
+  {
+    stopCooling();
+  }
+  else
+  {
+    stopHeating();
+  }
+
+  Serial.println("Thermal cycle completed.");
 }
