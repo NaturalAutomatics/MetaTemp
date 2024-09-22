@@ -55,6 +55,12 @@ Kelvin::Kelvin(const String &modelName)
   _modelName = modelName;
 }
 
+void Kelvin::begin()
+{
+  Serial.begin(9600);
+  fullPinSetup();
+}
+
 void Kelvin::fullPinSetup()
 {
   for (int i = 0; i < sizeof(this->_pinsOutput) / sizeof(this->_pinsOutput[0]); i++)
@@ -76,6 +82,10 @@ void Kelvin::startCooling(int intensity)
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, HIGH);
   digitalWrite(_peltierIn2Pin, LOW);
+
+  // Set info:
+  _isCooling = true;
+  _currentIntensity = intensity;
 }
 
 void Kelvin::startHeating(int intensity)
@@ -83,6 +93,10 @@ void Kelvin::startHeating(int intensity)
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, LOW);
   digitalWrite(_peltierIn2Pin, HIGH);
+
+  // Set info:
+  _isCooling = false;
+  _currentIntensity = intensity;
 }
 
 void Kelvin::stopCooling()
@@ -135,12 +149,14 @@ void Kelvin::ledOn()
 {
   digitalWrite(ledPlus, HIGH);
   digitalWrite(ledMinus, LOW);
+  _ledState = true;
 }
 
 void Kelvin::ledOff()
 {
   digitalWrite(ledPlus, LOW);
   digitalWrite(ledMinus, LOW);
+  _fadeAmount = -_fadeAmount;
 }
 
 void Kelvin::blinkFront(int delayTime)
@@ -186,4 +202,126 @@ void Kelvin::runThermalCycle(bool isCooling, int intensity, int durationSeconds)
   }
 
   Serial.println("Thermal cycle completed.");
+}
+
+void Kelvin::sendStatus()
+{
+  Serial.println("KelvinVR Status:");
+  Serial.println("----------------");
+  Serial.print("Model: ");
+  Serial.println(_modelName);
+  Serial.print("Thermal State: ");
+  if (_isCooling)
+  {
+    Serial.println("Cooling");
+  }
+  else if (_isHeating)
+  {
+    Serial.println("Heating");
+  }
+  else
+  {
+    Serial.println("Idle");
+  }
+  Serial.print("Current Intensity: ");
+  Serial.println(_currentIntensity);
+  Serial.print("LED State: ");
+  Serial.println(_ledState ? "ON" : "OFF");
+  Serial.println("----------------");
+}
+
+void Kelvin::processCommand(const String &command)
+{
+  if (command.startsWith("COOL"))
+  {
+    int intensity = 255;
+    if (command.length() > 5)
+    {
+      intensity = command.substring(5).toInt();
+    }
+    startCooling(intensity);
+    Serial.println("Cooling started");
+  }
+  else if (command.startsWith("HEAT"))
+  {
+    int intensity = 255;
+    if (command.length() > 5)
+    {
+      intensity = command.substring(5).toInt();
+    }
+    startHeating(intensity);
+    Serial.println("Heating started");
+  }
+  else if (command == "STOP")
+  {
+    stopThermalControl();
+    Serial.println("Thermal control stopped");
+  }
+  else if (command.startsWith("CYCLE"))
+  {
+    String params[4];
+    int paramCount = 0;
+    int lastIndex = 0;
+    for (int i = 0; i < command.length(); i++)
+    {
+      if (command.charAt(i) == ' ' || i == command.length() - 1)
+      {
+        params[paramCount++] = command.substring(lastIndex, i == command.length() - 1 ? i + 1 : i);
+        lastIndex = i + 1;
+      }
+    }
+    if (paramCount == 4)
+    {
+      bool isCooling = params[1] == "COOL";
+      int intensity = params[2].toInt();
+      int duration = params[3].toInt();
+      runThermalCycle(isCooling, intensity, duration);
+      Serial.println("Thermal cycle started");
+    }
+  }
+
+  else if (command == "STATUS")
+  {
+    sendStatus();
+  }
+
+  else if (command == "STOPCOOL")
+  {
+    stopCooling();
+    Serial.println("Cooling stopped");
+  }
+  else if (command == "STOPHEAT")
+  {
+    stopHeating();
+    Serial.println("Heating stopped");
+  }
+  else if (command == "LED ON")
+  {
+    ledOn();
+    Serial.println("LED turned on");
+  }
+  else if (command == "LED OFF")
+  {
+    ledOff();
+    Serial.println("LED turned off");
+  }
+  else if (command.startsWith("LED BLINK"))
+  {
+    int delay = 1000;
+    if (command.length() > 10)
+    {
+      delay = command.substring(10).toInt();
+    }
+    blinkFront(delay);
+    Serial.println("LED blinking");
+  }
+  else if (command == "LED FADE")
+  {
+    fadeEffect(getBrightness());
+    Serial.println("LED fading");
+  }
+  else
+  {
+    Serial.println("Unknown command");
+  }
 }

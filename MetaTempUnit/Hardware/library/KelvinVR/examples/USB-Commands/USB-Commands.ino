@@ -54,15 +54,13 @@ Stop Heating: Command: "STOPHEAT"
 LED Control: Command: "LED ON" (to turn the LED on) Command: "LED OFF" (to turn the LED off) Command: "LED BLINK delay" (to blink the LED with a specific delay) Command: "LED FADE" (to create a fade effect)
 */
 
-#include "Kelvin.h"
+#include "KelvinVR.h"
 
 Kelvin kelvin("Mk1-Alpha");
 
 void setup()
 {
-    Serial.begin(9600);
     kelvin.begin();
-    kelvin.fullPinSetup();
 }
 
 void loop()

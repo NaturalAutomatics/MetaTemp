@@ -71,6 +71,10 @@ public:
 	void stopCooling();
 	void stopHeating();
 
+	// For USB:
+	void processCommand(const String &command);
+	void sendStatus();
+
 protected:
 	String _modelName;
 
@@ -91,6 +95,13 @@ protected:
 	int _fadeAmount = 5;
 
 	int _boadRate;
+
+	// Info to get about module:
+
+	bool _isCooling = false;
+	bool _isHeating = false;
+	int _currentIntensity = 0;
+	bool _ledState = false;
 };
 
 #endif
