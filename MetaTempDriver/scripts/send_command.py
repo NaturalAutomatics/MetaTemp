@@ -3,10 +3,10 @@ import time
 import argparse
 
 def send_command(ser, command):
-    ser.write(f"{command}\n".encode())
+    ser.write((command + "\n").encode())
     time.sleep(0.1)  # Small delay to ensure command is processed
     response = ser.readline().decode().strip()
-    print(f"Arduino response: {response}")
+    print("Arduino response: {}".format(response))
 
 def main():
     parser = argparse.ArgumentParser(description="Send commands to Arduino over USB")
@@ -20,12 +20,12 @@ def main():
         with serial.Serial(args.port, 9600, timeout=1) as ser:
             time.sleep(2)  # Wait for Arduino to reset
             
-            full_command = f"{args.command} {' '.join(args.args)}".strip()
-            print(f"Sending command: {full_command}")
+            full_command = "{} {}".format(args.command, " ".join(args.args)).strip()
+            print("Sending command: {}".format(full_command))
             send_command(ser, full_command)
 
     except serial.SerialException as e:
-        print(f"Error: {e}")
+        print("Error: {}".format(e))
         print("Make sure the Arduino is connected and the port is correct.")
 
 if __name__ == "__main__":
