@@ -1,7 +1,49 @@
 /*
   Main class for KelvinVR Library
+
+	Arduino Mega 2560
+	___________________
+   |  ___________  USB |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |___________|     |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+   | D | D | D | D | D | D | . | . | . | . | D |
+   | 8 | 9 | 1 | 1 | 1 | 1 |   |   |   |   | 3 |
+   |   |   | 0 | 1 | 2 | 3 |   |   |   |   | 7 |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+	 |   |   |   |   |   |               |
+	 |   |   |   |   |   |               |
+	 |   |   |   |   |   |               |
+	 |   |   |   |   |   |               Buzzer
+	 |   |   |   |   |   |
+	 |   |   |   |   |   +-- Not used
+	 |   |   |   |   |
+	 |   |   |   |   +-- Not used
+	 |   |   |   |
+	 |   |   |   +-- Red LED
+	 |   |   |
+	 |   |   +-- Green LED
+	 |   |
+	 |   +-- LED+ (Fading LED Blue)
+	 |
+	 +-- LED- (Fading LED Blue)
+
+Note: Pins 9, 10, and 11 support PWM for LED brightness control
+
+
 */
 // Ensure this library description is only included once
+
 #ifndef KELVIN_VR_H
 #define KELVIN_VR_H
 
@@ -16,10 +58,15 @@ public:
 	void fullPinSetup();
 	void blinkLed(int ledPin);
 	void fadeEffect(int led);
-	void ledOn(); // Add this line
+	void ledOn();
 	void ledOff();
-	void blinkFront(int delayTime); // Add this line if it's not already there
+	void blinkFront(int delayTime);
 	int getBrightness() const { return _brightness; }
+
+	// New methods for Peltier control
+	void startCooling(int intensity = 255);
+	void startHeating(int intensity = 255);
+	void stopThermalControl();
 
 protected:
 	String _modelName;
@@ -29,6 +76,11 @@ protected:
 	int redLed = 11;
 	int ledPlus = 9;
 	int ledMinus = 8;
+
+	// New pins for L293D control
+	int _peltierEnablePin = 7;
+	int _peltierIn1Pin = 6;
+	int _peltierIn2Pin = 5;
 
 	int _pinsOutput[5];
 

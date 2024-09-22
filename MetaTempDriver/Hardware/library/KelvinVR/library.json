@@ -1,14 +1,15 @@
 {
-  "name": "KelvinVR for MetaTemp",
-  "keywords": "MetaTemp KelvinVR",
-  "description": "KelvinVR for MetaTemp project on Arduino & ESP32",
-  "repository":
-  {
-    "type": "git",
-    "url": "https://github.com/AlexNoyanov/KelvinVR.git"
-  },
-  "license": "MIT",
-  "version": "1.0.3",
-  "frameworks": "*",
-  "platforms": "*"
-}
+    "name": "KelvinVR for MetaTemp",
+    "keywords": "MetaTemp KelvinVR",
+    "description": "KelvinVR for MetaTemp project on Arduino & ESP32",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/AlexNoyanov/KelvinVR.git"
+    },
+    "license": "MIT",
+    "version": "1.0.3",
+    "frameworks": "*",
+    "platforms": "*"
+  }
+  

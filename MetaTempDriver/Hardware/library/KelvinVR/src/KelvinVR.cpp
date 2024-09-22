@@ -1,11 +1,46 @@
 /*
   KelvinVR Mk1-Alpha test module: Arduino Mega Original 2560
+  Main class for KelvinVR Library
 
-  Front LED connection:
+  Arduino Mega 2560
+  ___________________
+   |  ___________  USB |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |___________|     |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+   | D | D | D | D | D | D | . | . | . | . | D |
+   | 8 | 9 | 1 | 1 | 1 | 1 |   |   |   |   | 3 |
+   |   |   | 0 | 1 | 2 | 3 |   |   |   |   | 7 |
+ --+---+---+---+---+---+---+---+---+---+---+---+
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               |
+   |   |   |   |   |   |               Buzzer
+   |   |   |   |   |   |
+   |   |   |   |   |   +-- Not used
+   |   |   |   |   |
+   |   |   |   |   +-- Not used
+   |   |   |   |
+   |   |   |   +-- Red LED
+   |   |   |
+   |   |   +-- Green LED
+   |   |
+   |   +-- LED+ (Fading LED Blue)
+   |
+   +-- LED- (Fading LED Blue)
 
-  RGLed inside:
+Note: Pins 9, 10, and 11 support PWM for LED brightness control
 
-  Motor Shield connections:
 
 
 */
@@ -13,21 +48,6 @@
 #define MAX_BRIGHTNESS 255
 
 #include <Arduino.h>
-
-// #include <hardware/esp32/KelvinVRESP32.hpp>
-
-// void KelvinVRESP32::begin()
-// {
-//   // ESP32-specific initialization
-// }
-
-// void KelvinVRESP32::update()
-// {
-//   // ESP32-specific update logic
-// }
-
-// Implement other functions
-
 #include "KelvinVR.h"
 
 Kelvin::Kelvin(const String &modelName)
@@ -41,6 +61,35 @@ void Kelvin::fullPinSetup()
   {
     pinMode(this->_pinsOutput[i], OUTPUT);
   }
+
+  // Setup Peltier control pins
+  pinMode(_peltierEnablePin, OUTPUT);
+  pinMode(_peltierIn1Pin, OUTPUT);
+  pinMode(_peltierIn2Pin, OUTPUT);
+
+  // Initially stop the Peltier
+  stopThermalControl();
+}
+
+void Kelvin::startCooling(int intensity)
+{
+  analogWrite(_peltierEnablePin, intensity);
+  digitalWrite(_peltierIn1Pin, HIGH);
+  digitalWrite(_peltierIn2Pin, LOW);
+}
+
+void Kelvin::startHeating(int intensity)
+{
+  analogWrite(_peltierEnablePin, intensity);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, HIGH);
+}
+
+void Kelvin::stopThermalControl()
+{
+  digitalWrite(_peltierEnablePin, LOW);
+  digitalWrite(_peltierIn1Pin, LOW);
+  digitalWrite(_peltierIn2Pin, LOW);
 }
 
 void Kelvin::blinkLed(int ledPin)
