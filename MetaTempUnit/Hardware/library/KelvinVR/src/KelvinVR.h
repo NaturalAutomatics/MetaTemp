@@ -81,7 +81,7 @@ protected:
 	int buzzer = 37;
 	int greenLed = 10;
 	int redLed = 11;
-	int ledPlus = 9;
+	int ledPlus = 9; // Blue LED
 	int ledMinus = 8;
 
 	// New pins for L293D control

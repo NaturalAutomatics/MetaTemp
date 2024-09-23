@@ -315,10 +315,20 @@ void Kelvin::processCommand(const String &command)
     blinkFront(delay);
     Serial.println("LED blinking");
   }
-  else if (command == "LED FADE")
+  else if (command == "LED FADE BLUE")
   {
-    fadeEffect(getBrightness());
-    Serial.println("LED fading");
+    fadeEffect(ledPlus);
+    Serial.println("LED fading BLUE");
+  }
+  else if (command == "LED FADE GREEN")
+  {
+    fadeEffect(greenLed);
+    Serial.println("LED fading GREEN");
+  }
+  else if (command == "LED FADE RED")
+  {
+    fadeEffect(redLed);
+    Serial.println("LED fading GREEN");
   }
   else
   {
