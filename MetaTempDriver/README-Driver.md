@@ -63,6 +63,45 @@ To deploy the MetaTempDriver as a SteamVR driver, follow these steps:
 
 Refer to the SteamVR driver documentation for more detailed instructions on deploying and distributing your driver.
 
+## Using the Command Line Interface
+
+The KelvinVR library comes with a Python script that allows you to send commands to the Arduino over USB. This script provides a convenient way to control the KelvinVR functions from your computer.
+
+### Prerequisites
+
+- Python 2.7 or higher installed on your computer
+- PySerial library (`pip install pyserial`)
+
+### Script Usage
+
+The script `send_command.py` is located in the `tools` directory of the KelvinVR library. To use it, follow these steps:
+
+1. Open a terminal or command prompt.
+2. Navigate to the directory containing `send_command.py`.
+3. Run the script using the following format:
+
+### Troubleshooting
+
+- If you get a "port not found" error, make sure your Arduino is properly connected and you're using the correct port name.
+- On Windows, use `COM` ports (e.g., `COM3`) instead of `/dev/ttyUSB0`.
+- If you get a permission error on Linux, you may need to run the script with `sudo` or add your user to the `dialout` group.
+
+### Available Commands
+
+- `COOL [intensity]`: Start cooling (default intensity: 255)
+- `HEAT [intensity]`: Start heating (default intensity: 255)
+- `STOP`: Stop thermal control
+- `CYCLE <COOL|HEAT> <intensity> <duration>`: Run a thermal cycle
+- `STOPCOOL`: Stop cooling
+- `STOPHEAT`: Stop heating
+- `LED ON`: Turn LED on
+- `LED OFF`: Turn LED off
+- `LED BLINK <delay>`: Blink LED with specified delay
+- `LED FADE`: Fade LED
+
+For more detailed information on each command, refer to the KelvinVR library documentation.
+
+
 ## Contributing
 
 If you'd like to contribute to the MetaTempDriver project, please follow these steps:
@@ -77,8 +116,3 @@ If you'd like to contribute to the MetaTempDriver project, please follow these s
 
 This project is licensed under the [MIT License](LICENSE).
 
-Copy
-
-Insert at cursor
-text
-This README file provides an overview of the MetaTempDriver project, including its description, prerequisites, building and running instructions, deployment steps, and information on contributing to the project. It also includes the C++ code snippet you provided earlier, which implements the core functionality of the driver.
