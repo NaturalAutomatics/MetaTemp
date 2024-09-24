@@ -230,9 +230,25 @@ void Kelvin::sendStatus()
   Serial.println("----------------");
 }
 
+// Simple string hash function
+constexpr unsigned int hash(const char *str, int h = 0)
+{
+  return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
+}
+
 void Kelvin::processCommand(const String &command)
 {
-  if (command.startsWith("COOL"))
+  // Extract the first word of the command
+  String firstWord = command;
+  int spaceIndex = command.indexOf(' ');
+  if (spaceIndex != -1)
+  {
+    firstWord = command.substring(0, spaceIndex);
+  }
+
+  switch (hash(firstWord.c_str()))
+  {
+  case hash("COOL"):
   {
     int intensity = 255;
     if (command.length() > 5)
@@ -241,8 +257,9 @@ void Kelvin::processCommand(const String &command)
     }
     startCooling(intensity);
     Serial.println("Cooling started");
+    break;
   }
-  else if (command.startsWith("HEAT"))
+  case hash("HEAT"):
   {
     int intensity = 255;
     if (command.length() > 5)
@@ -251,13 +268,15 @@ void Kelvin::processCommand(const String &command)
     }
     startHeating(intensity);
     Serial.println("Heating started");
+    break;
   }
-  else if (command == "STOP")
+  case hash("STOP"):
   {
     stopThermalControl();
     Serial.println("Thermal control stopped");
+    break;
   }
-  else if (command.startsWith("CYCLE"))
+  case hash("CYCLE"):
   {
     String params[4];
     int paramCount = 0;
@@ -278,60 +297,68 @@ void Kelvin::processCommand(const String &command)
       runThermalCycle(isCooling, intensity, duration);
       Serial.println("Thermal cycle started");
     }
+    break;
   }
-
-  else if (command == "STATUS")
+  case hash("STATUS"):
   {
     sendStatus();
+    break;
   }
-
-  else if (command == "STOPCOOL")
+  case hash("STOPCOOL"):
   {
     stopCooling();
     Serial.println("Cooling stopped");
+    break;
   }
-  else if (command == "STOPHEAT")
+  case hash("STOPHEAT"):
   {
     stopHeating();
     Serial.println("Heating stopped");
+    break;
   }
-  else if (command == "LED ON")
+  case hash("LED"):
   {
-    ledOn();
-    Serial.println("LED turned on");
-  }
-  else if (command == "LED OFF")
-  {
-    ledOff();
-    Serial.println("LED turned off");
-  }
-  else if (command.startsWith("LED BLINK"))
-  {
-    int delay = 1000;
-    if (command.length() > 10)
+    if (command == "LED ON")
     {
-      delay = command.substring(10).toInt();
+      ledOn();
+      Serial.println("LED turned on");
     }
-    blinkFront(delay);
-    Serial.println("LED blinking");
+    else if (command == "LED OFF")
+    {
+      ledOff();
+      Serial.println("LED turned off");
+    }
+    else if (command.startsWith("LED BLINK"))
+    {
+      int delay = 1000;
+      if (command.length() > 10)
+      {
+        delay = command.substring(10).toInt();
+      }
+      blinkFront(delay);
+      Serial.println("LED blinking");
+    }
+    else if (command == "LED FADE BLUE")
+    {
+      fadeEffect(ledPlus);
+      Serial.println("LED fading BLUE");
+    }
+    else if (command == "LED FADE GREEN")
+    {
+      fadeEffect(greenLed);
+      Serial.println("LED fading GREEN");
+    }
+    else if (command == "LED FADE RED")
+    {
+      fadeEffect(redLed);
+      Serial.println("LED fading RED");
+    }
+    break;
   }
-  else if (command == "LED FADE BLUE")
-  {
-    fadeEffect(ledPlus);
-    Serial.println("LED fading BLUE");
-  }
-  else if (command == "LED FADE GREEN")
-  {
-    fadeEffect(greenLed);
-    Serial.println("LED fading GREEN");
-  }
-  else if (command == "LED FADE RED")
-  {
-    fadeEffect(redLed);
-    Serial.println("LED fading GREEN");
-  }
-  else
+  default:
   {
     Serial.println("Unknown command");
+    break;
+  }
   }
 }
