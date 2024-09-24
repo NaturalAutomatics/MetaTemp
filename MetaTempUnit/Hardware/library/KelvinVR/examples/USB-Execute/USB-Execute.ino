@@ -1,15 +1,67 @@
-#include "Kelvin.h"
+/*
+  KelvinVR Library - USB Commands
+  This sketch demonstrates the use of the fadeEffect method
+  to create a smooth fading effect on an LED.
+
+      Arduino Uno
+    ___________________
+   |  ___________  USB |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |           |     |
+   | |___________|     |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+   |                   |
+ --+---+---+---+---+---+--
+   | D | D | D | D | D |
+   | 1 | 1 | 1 | 9 | 8 |
+   | 3 | 2 | 1 |   |   |
+ --+---+---+---+---+---+--
+     |   |   |   |   |
+     |   |   |   |   |
+     |   |   |   |   |
+     |   |   |   |   Ground
+     |   |   |   |
+     |   |   |   LED+ (Fading LED)
+     |   |   |
+     |   |   Red LED
+     |   |
+     |   Green LED
+     |
+     Buzzer
+
+Note: Pin 9 is used for PWM to control LED brightness
+
+==== ALL USB COMMANDS LIST: =====
+Start Cooling: Command: "COOL intensity" Example: "COOL 200" (to start cooling at intensity 200) Default: "COOL" (will use default intensity of 255)
+
+Start Heating: Command: "HEAT intensity" Example: "HEAT 180" (to start heating at intensity 180) Default: "HEAT" (will use default intensity of 255)
+
+Stop Thermal Control: Command: "STOP"
+
+Run Thermal Cycle: Command: "CYCLE cooling/heating intensity duration" Example: "CYCLE COOL 200 30" (to run a cooling cycle at intensity 200 for 30 seconds) Example: "CYCLE HEAT 180 45" (to run a heating cycle at intensity 180 for 45 seconds)
+
+Stop Cooling: Command: "STOPCOOL"
+
+Stop Heating: Command: "STOPHEAT"
+
+LED Control: Command: "LED ON" (to turn the LED on) Command: "LED OFF" (to turn the LED off) Command: "LED BLINK delay" (to blink the LED with a specific delay) Command: "LED FADE" (to create a fade effect)
+*/
+
+#include "KelvinVR.h"
 
 Kelvin kelvin("Mk1-Alpha"); // Create a Kelvin object with a model name
 
 void setup()
 {
-    Serial.begin(9600);    // Initialize serial communication at 9600 baud
-    kelvin.begin();        // Initialize the Kelvin object
-    kelvin.fullPinSetup(); // Set up all pins for the Kelvin device
-
-    Serial.println("KelvinVR Mk1-Alpha ready to receive commands.");
-    Serial.println("Type 'HELP' for a list of available commands.");
+    Serial.begin(9600); // Initialize serial communication at 9600 baud
+    kelvin.begin();     // Initialize the Kelvin object
 }
 
 void loop()
@@ -33,22 +85,4 @@ void loop()
     }
 
     // You can add any other continuous operations here if needed
-}
-
-void printHelp()
-{
-    Serial.println("Available commands:");
-    Serial.println("  COOL [intensity] - Start cooling (intensity 0-255, default 255)");
-    Serial.println("  HEAT [intensity] - Start heating (intensity 0-255, default 255)");
-    Serial.println("  STOP - Stop thermal control");
-    Serial.println("  CYCLE <COOL|HEAT> <intensity> <duration> - Run a thermal cycle");
-    Serial.println("  STATUS - Get current status");
-    Serial.println("  STOPCOOL - Stop cooling");
-    Serial.println("  STOPHEAT - Stop heating");
-    Serial.println("  LED ON - Turn LED on");
-    Serial.println("  LED OFF - Turn LED off");
-    Serial.println("  LED BLINK [delay] - Blink LED (delay in ms, default 1000)");
-    Serial.println("  LED FADE BLUE - Fade blue LED");
-    Serial.println("  LED FADE GREEN - Fade green LED");
-    Serial.println("  LED FADE RED - Fade red LED");
 }

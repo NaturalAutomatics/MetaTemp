@@ -59,6 +59,11 @@ void Kelvin::begin()
 {
   Serial.begin(9600);
   fullPinSetup();
+
+  Serial.println("");
+  Serial.println("KelvinVR Mk1-Alpha ready to receive commands.");
+  Serial.println("Type 'HELP' for a list of available commands.");
+  Serial.println("");
 }
 
 void Kelvin::fullPinSetup()
@@ -72,6 +77,14 @@ void Kelvin::fullPinSetup()
   pinMode(_peltierEnablePin, OUTPUT);
   pinMode(_peltierIn1Pin, OUTPUT);
   pinMode(_peltierIn2Pin, OUTPUT);
+
+  // Setup LED pins
+  pinMode(ledPlus, OUTPUT);
+  pinMode(ledMinus, OUTPUT);
+  pinMode(ledMinus, OUTPUT);
+
+  // For two-pins LED:
+  digitalWrite(ledMinus, LOW);
 
   // Initially stop the Peltier
   stopThermalControl();
@@ -236,6 +249,24 @@ constexpr unsigned int hash(const char *str, int h = 0)
   return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
 }
 
+void Kelvin::printHelp()
+{
+  Serial.println("Available commands:");
+  Serial.println("  COOL [intensity] - Start cooling (intensity 0-255, default 255)");
+  Serial.println("  HEAT [intensity] - Start heating (intensity 0-255, default 255)");
+  Serial.println("  STOP - Stop thermal control");
+  Serial.println("  CYCLE <COOL|HEAT> <intensity> <duration> - Run a thermal cycle");
+  Serial.println("  STATUS - Get current status");
+  Serial.println("  STOPCOOL - Stop cooling");
+  Serial.println("  STOPHEAT - Stop heating");
+  Serial.println("  LED ON - Turn LED on");
+  Serial.println("  LED OFF - Turn LED off");
+  Serial.println("  LED BLINK [delay] - Blink LED (delay in ms, default 1000)");
+  Serial.println("  LED FADE BLUE - Fade blue LED");
+  Serial.println("  LED FADE GREEN - Fade green LED");
+  Serial.println("  LED FADE RED - Fade red LED");
+}
+
 void Kelvin::processCommand(const String &command)
 {
   // Extract the first word of the command
@@ -314,6 +345,11 @@ void Kelvin::processCommand(const String &command)
   {
     stopHeating();
     Serial.println("Heating stopped");
+    break;
+  }
+  case hash("HELP"):
+  {
+    printHelp();
     break;
   }
   case hash("LED"):
