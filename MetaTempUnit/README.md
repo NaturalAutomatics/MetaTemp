@@ -43,6 +43,11 @@ This document outlines the USB commands available for controlling devices using 
 ### Fade LED
 - Command: `LED FADE`
 
+### Fade LED Colored
+- Command: `LED FADE BLUE`
+- Command: `LED FADE GREEN`
+- Command: `LED FADE RED`
+
 ## Notes
 - Replace `[intensity]` with a value between 0-255 to set the intensity of heating or cooling.
 - For the `CYCLE` command, `<duration>` is specified in seconds.
