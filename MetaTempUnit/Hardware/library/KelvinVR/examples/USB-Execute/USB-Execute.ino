@@ -73,14 +73,8 @@ void loop()
 
         if (command.length() > 0)
         {
-            if (command.equalsIgnoreCase("HELP"))
-            {
-                printHelp();
-            }
-            else
-            {
-                kelvin.processCommand(command); // Process the command using the Kelvin object
-            }
+
+            kelvin.processCommand(command); // Process the command using the Kelvin object
         }
     }
 

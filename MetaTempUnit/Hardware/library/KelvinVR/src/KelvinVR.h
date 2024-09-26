@@ -54,7 +54,7 @@ class Kelvin
 public:
 	Kelvin();
 	Kelvin(const String &modelName);
-	void begin();
+	void begin(int bitRate = 9600);
 	void fullPinSetup();
 	void blinkLed(int ledPin);
 	void fadeEffect(int led);
@@ -74,6 +74,13 @@ public:
 	// For USB:
 	void processCommand(const String &command);
 	void sendStatus();
+
+	void printHelp();
+
+	// Main loop:
+	void runFirmware(); // For Mk 1 Alpha testing
+						// void runFirmware(); // For Mk 1 Beta testing
+						// void runFirmware(int boardRate);
 
 protected:
 	String _modelName;
