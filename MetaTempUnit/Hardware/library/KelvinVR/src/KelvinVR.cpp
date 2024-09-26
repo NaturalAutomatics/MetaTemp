@@ -55,9 +55,9 @@ Kelvin::Kelvin(const String &modelName)
   _modelName = modelName;
 }
 
-void Kelvin::begin()
+void Kelvin::begin(int bitRate = 9600)
 {
-  Serial.begin(9600);
+  Serial.begin(bitRate);
   fullPinSetup();
 
   Serial.println("");
@@ -396,5 +396,20 @@ void Kelvin::processCommand(const String &command)
     Serial.println("Unknown command");
     break;
   }
+  }
+}
+
+void Kelvin::runFirmware()
+{
+
+  if (Serial.available())
+  {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command.length() > 0)
+    {
+      processCommand(command);
+    }
   }
 }
