@@ -1,10 +1,10 @@
 -- item_tracker.lua
 
--- List of specific models to track
+-- List of specific models to track (Cold)
 local trackedModels = {
-    "models/props/example_model1.vmdl",
-    "models/props/example_model2.vmdl",
-    "models/props/example_model3.vmdl"
+    "models/props/beer_bottle_1.vmdl",
+    "models/breakable_props/bottle_o_gin.vmdl",
+    "models/props/distillery/bottle_vodka.vmdl"
     -- Add more model paths as needed
 }
 
