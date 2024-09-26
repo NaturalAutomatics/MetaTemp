@@ -79,8 +79,6 @@ public:
 
 	// Main loop:
 	void runFirmware(); // For Mk 1 Alpha testing
-						// void runFirmware(); // For Mk 1 Beta testing
-						// void runFirmware(int boardRate);
 
 protected:
 	String _modelName;
