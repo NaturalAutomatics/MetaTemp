@@ -48,8 +48,7 @@ Kelvin kelvin("Mk1-Alpha"); // Create a Kelvin object with a model name
 
 void setup()
 {
-    // Serial.begin(); // Initialize serial communication at 9600 baud
-    kelvin.begin(9600); // Initialize the Kelvin object
+    kelvin.begin(); // Initialize the Kelvin with default settings
 }
 
 void loop()
