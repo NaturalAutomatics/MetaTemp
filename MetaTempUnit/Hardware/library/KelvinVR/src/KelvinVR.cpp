@@ -246,7 +246,18 @@ void Kelvin::sendStatus()
   Serial.println("----------------");
 }
 
-// Simple string hash function
+/*
+Simple string hash function
+
+Key points about the algorithm:
+
+1. It starts with an initial value of 5381.
+2. For each character in the input string, it:
+   - Multiplies the current hash value by 33 (which is 2^5 + 1)
+   - Adds the ASCII value of the current character
+3. The multiplication by 33 is typically implemented as `(hash << 5) + hash` for efficiency.
+
+*/
 constexpr unsigned int hash(const char *str, int h = 0)
 {
   return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
