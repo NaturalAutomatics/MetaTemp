@@ -71,6 +71,8 @@ public:
 	void stopCooling();
 	void stopHeating();
 
+	void ledAction(const String &command);
+
 	// For USB:
 	void processCommand(const String &command);
 	void sendStatus();
@@ -94,7 +96,7 @@ protected:
 	int _peltierIn1Pin = 6;
 	int _peltierIn2Pin = 5;
 
-	int _pinsOutput[5];
+	// int _pinsOutput[5];
 
 	int _brightness = 0;
 	int _fadeAmount = 5;
