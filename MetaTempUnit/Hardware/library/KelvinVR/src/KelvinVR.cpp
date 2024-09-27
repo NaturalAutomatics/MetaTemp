@@ -49,6 +49,7 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 #define MAX_INTENSITY 255
 #define DEFAULT_BLINK_TIME 1000
 #define FADE_DELAY_TIME 30
+#define DEFAULT_BAUD_RATE 115200
 
 #include <Arduino.h>
 #include "KelvinVR.h"
@@ -58,9 +59,9 @@ Kelvin::Kelvin(const String &modelName)
   _modelName = modelName;
 }
 
-void Kelvin::begin(int bitRate = 9600)
+void Kelvin::begin(int baudRate = DEFAULT_BAUD_RATE)
 {
-  Serial.begin(bitRate);
+  Serial.begin(baudRate);
   fullPinSetup();
 
   Serial.println("");
