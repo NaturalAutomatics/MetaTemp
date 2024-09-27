@@ -28,7 +28,7 @@ void loop() {
 ## Methods
 
 ### Initialization
-- `begin(int bitRate = 9600)`: Initializes the KelvinVR system. Default baud rate is 9600 if not specified.
+- `begin(int baudRate = 115200)`: Initializes the KelvinVR system. Default baud rate is 115200 if not specified.
 
 ### Thermal Control
 - `startCooling(int intensity)`: Starts cooling at the specified intensity (0-255).
