@@ -13,7 +13,7 @@ Include the library in your Arduino sketch:
 ```cpp
 #include <KelvinVR.h>
 
-Kelvin kelvin;
+Kelvin kelvin("Mk1-Alpha");
 
 void setup() {
   kelvin.begin();
@@ -21,6 +21,7 @@ void setup() {
 
 void loop() {
   // Your code here
+  kelvin.runFirmware();
 }
 ```
 
