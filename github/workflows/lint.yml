@@ -27,7 +27,7 @@ jobs:
 
     - name: Report status
       if: always()
-      uses: actions/github-script@v6
+      uses: actions/<a href="mailto:github-script@v6.3.3">github-script@v6.3.3</a>
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
@@ -43,3 +43,4 @@ jobs:
               summary: 'Linting completed'
             }
           })
+
