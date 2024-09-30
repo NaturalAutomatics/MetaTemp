@@ -111,7 +111,6 @@ protected:
 	bool _isHeating = false;
 	int _currentIntensity = 0;
 	bool _ledState = false;
-
 	bool _cycleInProgress = false;
 };
 
