@@ -1,4 +1,6 @@
 {
     "cmake.options.statusBarVisibility": "visible",
-    "jira-plugin.workingProject": ""
+    "jira-plugin.workingProject": "",
+    "files.trimTrailingWhitespace": true,
+    "editor.renderWhitespace": "all"
 }

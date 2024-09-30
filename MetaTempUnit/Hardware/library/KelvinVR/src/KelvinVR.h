@@ -53,6 +53,7 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 
 class Kelvin
 {
+
 public:
 	Kelvin();
 	Kelvin(const String &modelName);
