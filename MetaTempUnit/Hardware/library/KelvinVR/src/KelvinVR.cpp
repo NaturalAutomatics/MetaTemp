@@ -59,7 +59,7 @@ Kelvin::Kelvin(const String &modelName)
   _modelName = modelName;
 }
 
-void Kelvin::begin(int baudRate = DEFAULT_BAUD_RATE)
+void Kelvin::begin(unsigned long baudRate = DEFAULT_BAUD_RATE)
 {
   Serial.begin(baudRate);
   fullPinSetup();
@@ -94,7 +94,7 @@ void Kelvin::fullPinSetup()
   stopThermalControl();
 }
 
-void Kelvin::startCooling(int intensity)
+void Kelvin::startCooling(uint8_t intensity)
 {
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, HIGH);
@@ -105,7 +105,7 @@ void Kelvin::startCooling(int intensity)
   _currentIntensity = intensity;
 }
 
-void Kelvin::startHeating(int intensity)
+void Kelvin::startHeating(uint8_t intensity)
 {
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, LOW);
@@ -145,7 +145,7 @@ void Kelvin::blinkLed(int ledPin)
   delay(DEFAULT_BLINK_TIME);
 }
 
-void Kelvin::fadeEffect(int led)
+void Kelvin::fadeEffect(uint8_t led)
 {
   // set the brightness of pin 9:
   analogWrite(led, _brightness);
@@ -184,41 +184,44 @@ void Kelvin::blinkFront(int delayTime)
   delay(delayTime);
 }
 
-void Kelvin::runThermalCycle(bool isCooling, int intensity, int durationSeconds)
+void Kelvin::runThermalCycle(bool isCooling, uint8_t intensity, int durationSeconds)
 {
-  if (isCooling)
+
+  if (_cycleInProgress)
   {
-    Serial.println("Starting cooling cycle...");
-    startCooling(intensity);
-  }
-  else
-  {
-    Serial.println("Starting heating cycle...");
-    startHeating(intensity);
+    Serial.println("Error: A cycle is already in progress");
+    return;
   }
 
-  ledOn(); // Turn on LED to indicate active cycle
+  _cycleInProgress = true;
 
-  for (int i = 0; i < durationSeconds; i++)
+  unsigned long startTime = millis();
+  unsigned long lastPrintTime = 0;
+  int secondsElapsed = 0;
+
+  while (millis() - startTime < durationSeconds * 1000UL && _cycleInProgress)
   {
-    Serial.print(isCooling ? "Cooling: " : "Heating: ");
-    Serial.print(i + 1);
-    Serial.println(" seconds");
-    delay(DEFAULT_BLINK_TIME);
+    // Check for new commands
+    if (Serial.available())
+    {
+      String command = Serial.readStringUntil('\n');
+      processCommand(command);
+    }
+
+    // Print status every second
+    if (millis() - lastPrintTime >= 1000)
+    {
+      secondsElapsed++;
+      Serial.print(isCooling ? "Cooling: " : "Heating: ");
+      Serial.print(secondsElapsed);
+      Serial.println(" seconds");
+      lastPrintTime = millis();
+    }
   }
 
-  ledOff(); // Turn off LED
-
-  if (isCooling)
-  {
-    stopCooling();
-  }
-  else
-  {
-    stopHeating();
-  }
-
-  Serial.println("Thermal cycle completed.");
+  stopThermalControl();
+  _cycleInProgress = false;
+  Serial.println(_cycleInProgress ? "Thermal cycle interrupted" : "Thermal cycle completed");
 }
 
 void Kelvin::sendStatus()
@@ -437,11 +440,6 @@ void Kelvin::runFirmware()
   if (Serial.available())
   {
     String command = Serial.readStringUntil('\n');
-    command.trim();
-
-    if (command.length() > 0)
-    {
-      processCommand(command);
-    }
+    processCommand(command);
   }
 }

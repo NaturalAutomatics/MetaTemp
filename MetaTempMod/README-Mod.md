@@ -7,6 +7,13 @@ This guide explains how to track specific VR objects when a player interacts wit
 1. **Identify the specific model**
    - Determine the exact name or class of the model you want to track.
    - For this example, we'll use a unique item called "special_item".
+    
+    The models to track:
+    - `"models/props/example_model1.vmdl"`
+    - `"models/props/example_model2.vmdl"`
+    - `"models/props/example_model3.vmdl"`
+
+
 
 2. **Create a script**
    - Create a Lua script named "item_tracker.lua" to handle the tracking.
