@@ -46,6 +46,10 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 */
 #define MIN_BRIGHTNESS 0
 #define MAX_BRIGHTNESS 255
+#define MAX_INTENSITY 255
+#define DEFAULT_BLINK_TIME 1000
+#define FADE_DELAY_TIME 30
+#define DEFAULT_BAUD_RATE 115200
 
 #include <Arduino.h>
 #include "KelvinVR.h"
@@ -55,9 +59,9 @@ Kelvin::Kelvin(const String &modelName)
   _modelName = modelName;
 }
 
-void Kelvin::begin(int bitRate = 9600)
+void Kelvin::begin(unsigned long baudRate = DEFAULT_BAUD_RATE)
 {
-  Serial.begin(bitRate);
+  Serial.begin(baudRate);
   fullPinSetup();
 
   Serial.println("");
@@ -68,10 +72,10 @@ void Kelvin::begin(int bitRate = 9600)
 
 void Kelvin::fullPinSetup()
 {
-  for (int i = 0; i < sizeof(this->_pinsOutput) / sizeof(this->_pinsOutput[0]); i++)
-  {
-    pinMode(this->_pinsOutput[i], OUTPUT);
-  }
+  // for (int i = 0; i < sizeof(this->_pinsOutput) / sizeof(this->_pinsOutput[0]); i++)
+  // {
+  //   pinMode(this->_pinsOutput[i], OUTPUT);
+  // }
 
   // Setup Peltier control pins
   pinMode(_peltierEnablePin, OUTPUT);
@@ -90,7 +94,7 @@ void Kelvin::fullPinSetup()
   stopThermalControl();
 }
 
-void Kelvin::startCooling(int intensity)
+void Kelvin::startCooling(uint8_t intensity)
 {
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, HIGH);
@@ -101,7 +105,7 @@ void Kelvin::startCooling(int intensity)
   _currentIntensity = intensity;
 }
 
-void Kelvin::startHeating(int intensity)
+void Kelvin::startHeating(uint8_t intensity)
 {
   analogWrite(_peltierEnablePin, intensity);
   digitalWrite(_peltierIn1Pin, LOW);
@@ -136,12 +140,12 @@ void Kelvin::stopThermalControl()
 void Kelvin::blinkLed(int ledPin)
 {
   digitalWrite(ledPin, HIGH);
-  delay(1000);
+  delay(DEFAULT_BLINK_TIME);
   digitalWrite(ledPin, LOW);
-  delay(1000);
+  delay(DEFAULT_BLINK_TIME);
 }
 
-void Kelvin::fadeEffect(int led)
+void Kelvin::fadeEffect(uint8_t led)
 {
   // set the brightness of pin 9:
   analogWrite(led, _brightness);
@@ -155,7 +159,7 @@ void Kelvin::fadeEffect(int led)
     _fadeAmount = -_fadeAmount;
   }
   // wait for 30 milliseconds to see the dimming effect
-  delay(30);
+  delay(FADE_DELAY_TIME);
 }
 
 void Kelvin::ledOn()
@@ -180,41 +184,44 @@ void Kelvin::blinkFront(int delayTime)
   delay(delayTime);
 }
 
-void Kelvin::runThermalCycle(bool isCooling, int intensity, int durationSeconds)
+void Kelvin::runThermalCycle(bool isCooling, uint8_t intensity, int durationSeconds)
 {
-  if (isCooling)
+
+  if (_cycleInProgress)
   {
-    Serial.println("Starting cooling cycle...");
-    startCooling(intensity);
-  }
-  else
-  {
-    Serial.println("Starting heating cycle...");
-    startHeating(intensity);
+    Serial.println("Error: A cycle is already in progress");
+    return;
   }
 
-  ledOn(); // Turn on LED to indicate active cycle
+  _cycleInProgress = true;
 
-  for (int i = 0; i < durationSeconds; i++)
+  unsigned long startTime = millis();
+  unsigned long lastPrintTime = 0;
+  int secondsElapsed = 0;
+
+  while (millis() - startTime < durationSeconds * 1000UL && _cycleInProgress)
   {
-    Serial.print(isCooling ? "Cooling: " : "Heating: ");
-    Serial.print(i + 1);
-    Serial.println(" seconds");
-    delay(1000);
+    // Check for new commands
+    if (Serial.available())
+    {
+      String command = Serial.readStringUntil('\n');
+      processCommand(command);
+    }
+
+    // Print status every second
+    if (millis() - lastPrintTime >= 1000)
+    {
+      secondsElapsed++;
+      Serial.print(isCooling ? "Cooling: " : "Heating: ");
+      Serial.print(secondsElapsed);
+      Serial.println(" seconds");
+      lastPrintTime = millis();
+    }
   }
 
-  ledOff(); // Turn off LED
-
-  if (isCooling)
-  {
-    stopCooling();
-  }
-  else
-  {
-    stopHeating();
-  }
-
-  Serial.println("Thermal cycle completed.");
+  stopThermalControl();
+  _cycleInProgress = false;
+  Serial.println(_cycleInProgress ? "Thermal cycle interrupted" : "Thermal cycle completed");
 }
 
 void Kelvin::sendStatus()
@@ -243,7 +250,18 @@ void Kelvin::sendStatus()
   Serial.println("----------------");
 }
 
-// Simple string hash function
+/*
+Simple string hash function
+
+Key points about the algorithm:
+
+1. It starts with an initial value of 5381.
+2. For each character in the input string, it:
+   - Multiplies the current hash value by 33 (which is 2^5 + 1)
+   - Adds the ASCII value of the current character
+3. The multiplication by 33 is typically implemented as `(hash << 5) + hash` for efficiency.
+
+*/
 constexpr unsigned int hash(const char *str, int h = 0)
 {
   return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
@@ -267,6 +285,57 @@ void Kelvin::printHelp()
   Serial.println("  LED FADE RED - Fade red LED");
 }
 
+void Kelvin::ledAction(const String &command)
+{
+  // Extract the LED sub-command
+  String ledCommand = command.substring(4); // Remove "LED " prefix
+
+  // Use a helper function to generate a simple hash for string comparison
+  switch (hash(ledCommand.c_str()))
+  {
+  case hash("ON"):
+    ledOn();
+    Serial.println("LED turned on");
+    break;
+
+  case hash("OFF"):
+    ledOff();
+    Serial.println("LED turned off");
+    break;
+
+  case hash("BLINK"):
+  {
+    int delay = DEFAULT_BLINK_TIME;
+    if (ledCommand.length() > 6) // "BLINK " is 6 characters
+    {
+      delay = ledCommand.substring(6).toInt();
+    }
+    blinkFront(delay);
+    Serial.println("LED blinking");
+    break;
+  }
+
+  case hash("FADE BLUE"):
+    fadeEffect(ledPlus);
+    Serial.println("LED fading BLUE");
+    break;
+
+  case hash("FADE GREEN"):
+    fadeEffect(greenLed);
+    Serial.println("LED fading GREEN");
+    break;
+
+  case hash("FADE RED"):
+    fadeEffect(redLed);
+    Serial.println("LED fading RED");
+    break;
+
+  default:
+    Serial.println("Unknown LED command");
+    break;
+  }
+}
+
 void Kelvin::processCommand(const String &command)
 {
   // Extract the first word of the command
@@ -281,7 +350,7 @@ void Kelvin::processCommand(const String &command)
   {
   case hash("COOL"):
   {
-    int intensity = 255;
+    int intensity = MAX_INTENSITY;
     if (command.length() > 5)
     {
       intensity = command.substring(5).toInt();
@@ -292,7 +361,7 @@ void Kelvin::processCommand(const String &command)
   }
   case hash("HEAT"):
   {
-    int intensity = 255;
+    int intensity = MAX_INTENSITY;
     if (command.length() > 5)
     {
       intensity = command.substring(5).toInt();
@@ -354,41 +423,7 @@ void Kelvin::processCommand(const String &command)
   }
   case hash("LED"):
   {
-    if (command == "LED ON")
-    {
-      ledOn();
-      Serial.println("LED turned on");
-    }
-    else if (command == "LED OFF")
-    {
-      ledOff();
-      Serial.println("LED turned off");
-    }
-    else if (command.startsWith("LED BLINK"))
-    {
-      int delay = 1000;
-      if (command.length() > 10)
-      {
-        delay = command.substring(10).toInt();
-      }
-      blinkFront(delay);
-      Serial.println("LED blinking");
-    }
-    else if (command == "LED FADE BLUE")
-    {
-      fadeEffect(ledPlus);
-      Serial.println("LED fading BLUE");
-    }
-    else if (command == "LED FADE GREEN")
-    {
-      fadeEffect(greenLed);
-      Serial.println("LED fading GREEN");
-    }
-    else if (command == "LED FADE RED")
-    {
-      fadeEffect(redLed);
-      Serial.println("LED fading RED");
-    }
+    ledAction(command);
     break;
   }
   default:
@@ -405,11 +440,6 @@ void Kelvin::runFirmware()
   if (Serial.available())
   {
     String command = Serial.readStringUntil('\n');
-    command.trim();
-
-    if (command.length() > 0)
-    {
-      processCommand(command);
-    }
+    processCommand(command);
   }
 }

@@ -47,6 +47,8 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 #ifndef KELVIN_VR_H
 #define KELVIN_VR_H
 
+#define DEFAULT_BAUD_RATE 115200
+
 #include <Arduino.h>
 
 class Kelvin
@@ -54,22 +56,24 @@ class Kelvin
 public:
 	Kelvin();
 	Kelvin(const String &modelName);
-	void begin(int bitRate = 9600);
+	void begin(unsigned long bitRate = DEFAULT_BAUD_RATE);
 	void fullPinSetup();
 	void blinkLed(int ledPin);
-	void fadeEffect(int led);
+	void fadeEffect(uint8_t led);
 	void ledOn();
 	void ledOff();
 	void blinkFront(int delayTime);
-	int getBrightness() const { return _brightness; }
+	uint8_t getBrightness() const { return _brightness; }
 
 	// New methods for Peltier control
-	void startCooling(int intensity = 255);
-	void startHeating(int intensity = 255);
+	void startCooling(uint8_t intensity = 255);
+	void startHeating(uint8_t intensity = 255);
 	void stopThermalControl();
-	void runThermalCycle(bool isCooling, int intensity, int durationSeconds);
+	void runThermalCycle(bool isCooling, uint8_t intensity, int durationSeconds);
 	void stopCooling();
 	void stopHeating();
+
+	void ledAction(const String &command);
 
 	// For USB:
 	void processCommand(const String &command);
@@ -83,23 +87,21 @@ public:
 protected:
 	String _modelName;
 
-	int buzzer = 37;
-	int greenLed = 10;
-	int redLed = 11;
-	int ledPlus = 9; // Blue LED
-	int ledMinus = 8;
+	static const uint8_t buzzer = 37;
+	static const uint8_t greenLed = 10;
+	static const uint8_t redLed = 11;
+	static const uint8_t ledPlus = 9; // Blue LED
+	static const uint8_t ledMinus = 8;
 
 	// New pins for L293D control
-	int _peltierEnablePin = 7;
-	int _peltierIn1Pin = 6;
-	int _peltierIn2Pin = 5;
+	static const uint8_t _peltierEnablePin = 7;
+	static const uint8_t _peltierIn1Pin = 6;
+	static const uint8_t _peltierIn2Pin = 5;
 
-	int _pinsOutput[5];
+	// int _pinsOutput[5];
 
-	int _brightness = 0;
-	int _fadeAmount = 5;
-
-	int _boadRate;
+	uint8_t _brightness = 0;
+	uint8_t _fadeAmount = 5;
 
 	// Info to get about module:
 
@@ -107,6 +109,8 @@ protected:
 	bool _isHeating = false;
 	int _currentIntensity = 0;
 	bool _ledState = false;
+
+	bool _cycleInProgress = false;
 };
 
 #endif

@@ -13,7 +13,7 @@ Include the library in your Arduino sketch:
 ```cpp
 #include <KelvinVR.h>
 
-Kelvin kelvin;
+Kelvin kelvin("Mk1-Alpha");
 
 void setup() {
   kelvin.begin();
@@ -21,13 +21,14 @@ void setup() {
 
 void loop() {
   // Your code here
+  kelvin.runFirmware();
 }
 ```
 
 ## Methods
 
 ### Initialization
-- `begin(int bitRate = 9600)`: Initializes the KelvinVR system. Default baud rate is 9600 if not specified.
+- `begin(int baudRate = 115200)`: Initializes the KelvinVR system. Default baud rate is 115200 if not specified.
 
 ### Thermal Control
 - `startCooling(int intensity)`: Starts cooling at the specified intensity (0-255).
