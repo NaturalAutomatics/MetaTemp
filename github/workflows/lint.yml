@@ -47,9 +47,9 @@ jobs:
     # Run linter(s)
     - name: Run linters
       run: |
-        # For Python (using Pylint and Flake8)
-        # pylint **/*.py
-        # flake8 .
+        For Python (using Pylint and Flake8)
+        pylint **/*.py
+        flake8 .
 
         # For JavaScript (using ESLint)
         # npx eslint .
