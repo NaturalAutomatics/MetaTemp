@@ -88,24 +88,25 @@ public:
 protected:
 	String _modelName;
 
-	static const uint8_t buzzer = 37;
-	static const uint8_t greenLed = 10;
-	static const uint8_t redLed = 11;
-	static const uint8_t ledPlus = 9; // Blue LED
-	static const uint8_t ledMinus = 8;
+	// LED pins
+	static const uint8_t PIN_LED_GREEN = 10;
+	static const uint8_t PIN_LED_RED = 11;
+	static const uint8_t PIN_LED_BLUE = 9;		 // Previously ledPlus
+	static const uint8_t PIN_LED_BLUE_MINUS = 8; // Previously ledMinus
 
-	// New pins for L293D control
-	static const uint8_t _peltierEnablePin = 7;
-	static const uint8_t _peltierIn1Pin = 6;
-	static const uint8_t _peltierIn2Pin = 5;
+	// Audio pin
+	static const uint8_t PIN_BUZZER = 37;
 
-	// int _pinsOutput[5];
+	// Peltier control pins
+	static const uint8_t PIN_PELTIER_ENABLE = 7;
+	static const uint8_t PIN_PELTIER_IN1 = 6;
+	static const uint8_t PIN_PELTIER_IN2 = 5;
 
+	// Brightness
 	uint8_t _brightness = 0;
 	uint8_t _fadeAmount = 5;
 
 	// Info to get about module:
-
 	bool _isCooling = false;
 	bool _isHeating = false;
 	int _currentIntensity = 0;

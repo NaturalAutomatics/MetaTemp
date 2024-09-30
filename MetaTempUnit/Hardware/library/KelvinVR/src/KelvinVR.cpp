@@ -72,23 +72,19 @@ void Kelvin::begin(unsigned long baudRate = DEFAULT_BAUD_RATE)
 
 void Kelvin::fullPinSetup()
 {
-  // for (int i = 0; i < sizeof(this->_pinsOutput) / sizeof(this->_pinsOutput[0]); i++)
-  // {
-  //   pinMode(this->_pinsOutput[i], OUTPUT);
-  // }
-
   // Setup Peltier control pins
-  pinMode(_peltierEnablePin, OUTPUT);
-  pinMode(_peltierIn1Pin, OUTPUT);
-  pinMode(_peltierIn2Pin, OUTPUT);
+  pinMode(PIN_PELTIER_ENABLE, OUTPUT);
+  pinMode(PIN_PELTIER_IN1, OUTPUT);
+  pinMode(PIN_PELTIER_IN2, OUTPUT);
 
   // Setup LED pins
-  pinMode(ledPlus, OUTPUT);
-  pinMode(ledMinus, OUTPUT);
-  pinMode(ledMinus, OUTPUT);
+  pinMode(PIN_LED_BLUE, OUTPUT);
+  pinMode(PIN_LED_BLUE_MINUS, OUTPUT);
+  pinMode(PIN_LED_GREEN, OUTPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
 
   // For two-pins LED:
-  digitalWrite(ledMinus, LOW);
+  digitalWrite(PIN_LED_BLUE_MINUS, LOW);
 
   // Initially stop the Peltier
   stopThermalControl();
@@ -96,9 +92,9 @@ void Kelvin::fullPinSetup()
 
 void Kelvin::startCooling(uint8_t intensity)
 {
-  analogWrite(_peltierEnablePin, intensity);
-  digitalWrite(_peltierIn1Pin, HIGH);
-  digitalWrite(_peltierIn2Pin, LOW);
+  analogWrite(PIN_PELTIER_ENABLE, intensity);
+  digitalWrite(PIN_PELTIER_IN1, HIGH);
+  digitalWrite(PIN_PELTIER_IN2, LOW);
 
   // Set info:
   _isCooling = true;
@@ -107,9 +103,9 @@ void Kelvin::startCooling(uint8_t intensity)
 
 void Kelvin::startHeating(uint8_t intensity)
 {
-  analogWrite(_peltierEnablePin, intensity);
-  digitalWrite(_peltierIn1Pin, LOW);
-  digitalWrite(_peltierIn2Pin, HIGH);
+  analogWrite(PIN_PELTIER_ENABLE, intensity);
+  digitalWrite(PIN_PELTIER_IN1, LOW);
+  digitalWrite(PIN_PELTIER_IN2, HIGH);
 
   // Set info:
   _isCooling = false;
@@ -118,23 +114,23 @@ void Kelvin::startHeating(uint8_t intensity)
 
 void Kelvin::stopCooling()
 {
-  digitalWrite(_peltierEnablePin, LOW);
-  digitalWrite(_peltierIn1Pin, LOW);
-  digitalWrite(_peltierIn2Pin, LOW);
+  digitalWrite(PIN_PELTIER_ENABLE, LOW);
+  digitalWrite(PIN_PELTIER_IN1, LOW);
+  digitalWrite(PIN_PELTIER_IN2, LOW);
 }
 
 void Kelvin::stopHeating()
 {
-  digitalWrite(_peltierEnablePin, LOW);
-  digitalWrite(_peltierIn1Pin, LOW);
-  digitalWrite(_peltierIn2Pin, LOW);
+  digitalWrite(PIN_PELTIER_ENABLE, LOW);
+  digitalWrite(PIN_PELTIER_IN1, LOW);
+  digitalWrite(PIN_PELTIER_IN2, LOW);
 }
 
 void Kelvin::stopThermalControl()
 {
-  digitalWrite(_peltierEnablePin, LOW);
-  digitalWrite(_peltierIn1Pin, LOW);
-  digitalWrite(_peltierIn2Pin, LOW);
+  digitalWrite(PIN_PELTIER_ENABLE, LOW);
+  digitalWrite(PIN_PELTIER_IN1, LOW);
+  digitalWrite(PIN_PELTIER_IN2, LOW);
 }
 
 void Kelvin::blinkLed(int ledPin)
@@ -164,23 +160,23 @@ void Kelvin::fadeEffect(uint8_t led)
 
 void Kelvin::ledOn()
 {
-  digitalWrite(ledPlus, HIGH);
-  digitalWrite(ledMinus, LOW);
+  digitalWrite(PIN_LED_BLUE, HIGH);
+  digitalWrite(PIN_LED_BLUE_MINUS, LOW);
   _ledState = true;
 }
 
 void Kelvin::ledOff()
 {
-  digitalWrite(ledPlus, LOW);
-  digitalWrite(ledMinus, LOW);
+  digitalWrite(PIN_LED_BLUE, LOW);
+  digitalWrite(PIN_LED_BLUE_MINUS, LOW);
   _fadeAmount = -_fadeAmount;
 }
 
 void Kelvin::blinkFront(int delayTime)
 {
-  digitalWrite(ledPlus, HIGH);
+  digitalWrite(PIN_LED_BLUE, HIGH);
   delay(delayTime);
-  digitalWrite(ledPlus, LOW);
+  digitalWrite(PIN_LED_BLUE, LOW);
   delay(delayTime);
 }
 
@@ -224,6 +220,23 @@ void Kelvin::runThermalCycle(bool isCooling, uint8_t intensity, int durationSeco
   Serial.println(_cycleInProgress ? "Thermal cycle interrupted" : "Thermal cycle completed");
 }
 
+/*
+Simple string hash function
+
+Key points about the algorithm:
+
+1. It starts with an initial value of 5381.
+2. For each character in the input string, it:
+   - Multiplies the current hash value by 33 (which is 2^5 + 1)
+   - Adds the ASCII value of the current character
+3. The multiplication by 33 is typically implemented as `(hash << 5) + hash` for efficiency.
+
+*/
+constexpr unsigned int hash(const char *str, int h = 0)
+{
+  return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
+}
+
 void Kelvin::sendStatus()
 {
   Serial.println("KelvinVR Status:");
@@ -248,23 +261,6 @@ void Kelvin::sendStatus()
   Serial.print("LED State: ");
   Serial.println(_ledState ? "ON" : "OFF");
   Serial.println("----------------");
-}
-
-/*
-Simple string hash function
-
-Key points about the algorithm:
-
-1. It starts with an initial value of 5381.
-2. For each character in the input string, it:
-   - Multiplies the current hash value by 33 (which is 2^5 + 1)
-   - Adds the ASCII value of the current character
-3. The multiplication by 33 is typically implemented as `(hash << 5) + hash` for efficiency.
-
-*/
-constexpr unsigned int hash(const char *str, int h = 0)
-{
-  return !str[h] ? 5381 : (hash(str, h + 1) * 33) ^ str[h];
 }
 
 void Kelvin::printHelp()
@@ -316,17 +312,17 @@ void Kelvin::ledAction(const String &command)
   }
 
   case hash("FADE BLUE"):
-    fadeEffect(ledPlus);
+    fadeEffect(PIN_LED_BLUE);
     Serial.println("LED fading BLUE");
     break;
 
   case hash("FADE GREEN"):
-    fadeEffect(greenLed);
+    fadeEffect(PIN_LED_GREEN);
     Serial.println("LED fading GREEN");
     break;
 
   case hash("FADE RED"):
-    fadeEffect(redLed);
+    fadeEffect(PIN_LED_RED);
     Serial.println("LED fading RED");
     break;
 
