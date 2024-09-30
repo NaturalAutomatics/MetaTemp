@@ -1,0 +1,61 @@
+name: Lint
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint flake8
+
+    - name: Run linters
+      run: |
+        pylint **/*.py
+        flake8 .
+
+    - name: Report status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == "success" ]; then
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs \
+            -f name='lint' \
+            -f head_sha=${{ github.event.pull_request.head.sha }} \
+            -f status='completed' \
+            -f conclusion='success' \
+            -f output='{
+              "title": "Lint Results",
+              "summary": "Linting passed successfully"
+            }'
+        else
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs \
+            -f name='lint' \
+            -f head_sha=${{ github.event.pull_request.head.sha }} \
+            -f status='completed' \
+            -f conclusion='failure' \
+            -f output='{
+              "title": "Lint Results",
+              "summary": "Linting failed"
+            }'
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
