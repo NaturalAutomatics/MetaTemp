@@ -35,7 +35,7 @@ def main():
 
     try:
         with serial.Serial(args.port, 9600, timeout=1) as ser:
-            time.sleep(2)  # Wait for Arduino to reset 
+            time.sleep(2)  # Wait for Arduino to reset
             full_command = f"{args.command} {' '.join(args.args)}".strip()
             print(f"Sending command: {full_command}")
             send_command(ser, full_command)
