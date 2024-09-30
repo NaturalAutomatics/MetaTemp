@@ -7,6 +7,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
     - uses: actions/checkout@v2
 
@@ -18,44 +21,47 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint flake8
+        pip install pylint flake8 pyserial
 
     - name: Run linters
+      id: linters
       run: |
-        pylint **/*.py
-        flake8 .
+        pylint_output=$(pylint **/*.py) || true
+        flake8_output=$(flake8 .) || true
+        echo "PYLINT_OUTPUT<<EOF" >> $GITHUB_ENV
+        echo "$pylint_output" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "FLAKE8_OUTPUT<<EOF" >> $GITHUB_ENV
+        echo "$flake8_output" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        if [[ -n "$pylint_output" || -n "$flake8_output" ]]; then
+          echo "::set-output name=lint_failed::true"
+        else
+          echo "::set-output name=lint_failed::false"
+        fi
 
     - name: Report status
       if: always()
-      run: |
-        if [ ${{ job.status }} == "success" ]; then
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/check-runs \
-            -f name='lint' \
-            -f head_sha=${{ github.event.pull_request.head.sha }} \
-            -f status='completed' \
-            -f conclusion='success' \
-            -f output='{
-              "title": "Lint Results",
-              "summary": "Linting passed successfully"
-            }'
-        else
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/check-runs \
-            -f name='lint' \
-            -f head_sha=${{ github.event.pull_request.head.sha }} \
-            -f status='completed' \
-            -f conclusion='failure' \
-            -f output='{
-              "title": "Lint Results",
-              "summary": "Linting failed"
-            }'
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const lint_failed = '${{ steps.linters.outputs.lint_failed }}' === 'true';
+          const conclusion = lint_failed ? 'failure' : 'success';
+          const summary = lint_failed ? 'Linting failed' : 'Linting passed successfully';
+          const pylint_output = process.env.PYLINT_OUTPUT || 'No output';
+          const flake8_output = process.env.FLAKE8_OUTPUT || 'No output';
+          
+          await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'lint',
+            head_sha: context.payload.pull_request.head.sha,
+            status: 'completed',
+            conclusion: conclusion,
+            output: {
+              title: 'Lint Results',
+              summary: summary,
+              text: `Pylint output:\n\`\`\`\n${pylint_output}\n\`\`\`\n\nFlake8 output:\n\`\`\`\n${flake8_output}\n\`\`\``
+            }
+          });

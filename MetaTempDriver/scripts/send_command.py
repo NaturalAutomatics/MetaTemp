@@ -13,7 +13,6 @@ def main():
     parser.add_argument("port", help="USB port (e.g., /dev/ttyUSB0 or COM3)")
     parser.add_argument("command", help="Command to send to Arduino")
     parser.add_argument("args", nargs="*", help="Additional arguments for the command")
-    
     args = parser.parse_args()
 
     try:
