@@ -65,6 +65,7 @@
 #               text: `Pylint output:\n\`\`\`\n${pylint_output}\n\`\`\`\n\nFlake8 output:\n\`\`\`\n${flake8_output}\n\`\`\``
 #             }
 #           });
+
 name: Lint
 
 on:
@@ -85,7 +86,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint
+        pip install pylint pyserial
 
     - name: Run Pylint
       run: pylint **/*.py
