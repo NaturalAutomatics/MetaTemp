@@ -432,7 +432,6 @@ void Kelvin::processCommand(const String &command)
 
 void Kelvin::runFirmware()
 {
-
   if (Serial.available())
   {
     String command = Serial.readStringUntil('\n');
