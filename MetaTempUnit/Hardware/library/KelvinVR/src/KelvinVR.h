@@ -103,8 +103,8 @@ protected:
 	static const uint8_t PIN_PELTIER_IN2 = 5;
 
 	// Brightness
-	uint8_t _brightness = 0;
-	uint8_t _fadeAmount = 5;
+	int _brightness = 0;
+	int _fadeAmount = 5;
 
 	// Info to get about module:
 	bool _isCooling = false;
