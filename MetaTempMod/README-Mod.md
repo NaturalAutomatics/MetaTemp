@@ -61,3 +61,8 @@ if special_item then
 else
     print("Warning: special_item not found in the map!")
 end
+
+```
+
+## Example about connecting scripts here:
+https://developer.valvesoftware.com/wiki/Half-Life:_Alyx_Workshop_Tools/Lua_Scripting/Hello_Gordon
