@@ -89,9 +89,15 @@ public:
 
 	// Main loop:
 	void runFirmware(); // For Mk 1 Alpha testing
+	void processCommand(const String &command);
+	void executeCommand(const String &command);
+	void stopCommand();
 
 protected:
 	String _modelName;
+
+	// To run commands:
+	String _currentCommand;
 
 	// LED pins
 	static const uint8_t PIN_LED_GREEN = 10;
