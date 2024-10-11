@@ -44,12 +44,6 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 
 
 */
-#define MIN_BRIGHTNESS 0
-#define MAX_BRIGHTNESS 255
-#define MAX_INTENSITY 255
-#define DEFAULT_BLINK_TIME 1000
-#define FADE_DELAY_TIME 30
-#define DEFAULT_BAUD_RATE 115200
 
 #include <Arduino.h>
 #include "KelvinVR.h"
