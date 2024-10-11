@@ -429,6 +429,160 @@ void Kelvin::runFirmware()
   if (Serial.available())
   {
     String command = Serial.readStringUntil('\n');
-    processCommand(command);
+    command.trim();
+    if (command.length() > 0)
+    {
+      // Stop the current command if one is running
+      stopCommand();
+      // Execute the new command
+      processCommand(command);
+    }
+  }
+
+  // Continue executing the current command if one is active
+  if (_currentCommand.length() > 0)
+  {
+    executeCommand(_currentCommand);
+  }
+}
+
+void Kelvin::processCommand(const String &command)
+{
+  _currentCommand = command;
+  Serial.print("Executing command: ");
+  Serial.println(_currentCommand);
+  // Initial setup for the command, if needed
+  if (_currentCommand.startsWith("COOL"))
+  {
+    int intensity = _currentCommand.substring(5).toInt();
+    startCooling(intensity);
+  }
+  else if (_currentCommand.startsWith("HEAT"))
+  {
+    int intensity = _currentCommand.substring(5).toInt();
+    startHeating(intensity);
+  }
+  else if (_currentCommand == "STOP")
+  {
+    stopThermalControl();
+    _currentCommand = ""; // Clear the current command
+  }
+  else if (_currentCommand.startsWith("LED"))
+  {
+    bool on = (_currentCommand.substring(4) == "ON");
+    ledAction(on ? "on" : "off");
+    _currentCommand = ""; // Clear the current command as LED action is immediate
+  }
+  else
+  {
+    Serial.println("Unknown command");
+    _currentCommand = ""; // Clear the current command
+  }
+}
+
+void Kelvin::stopCommand()
+{
+  if (_currentCommand.length() > 0)
+  {
+    if (_currentCommand.startsWith("COOL") || _currentCommand.startsWith("HEAT"))
+    {
+      stopThermalControl();
+    }
+    // Add other command stop logic here if needed
+    Serial.println("Stopped previous command: " + _currentCommand);
+    _currentCommand = "";
+  }
+}
+
+void Kelvin::executeCommand(const String &command)
+{
+  if (command.startsWith("COOL"))
+  {
+    int intensity = command.substring(5).toInt();
+    continueCooling(intensity);
+  }
+  else if (command.startsWith("HEAT"))
+  {
+    int intensity = command.substring(5).toInt();
+    continueHeating(intensity);
+  }
+  else if (command == "STOP")
+  {
+    stopThermalControl();
+    _currentCommand = ""; // Clear the current command
+  }
+  else if (command.startsWith("LED"))
+  {
+    if (command.substring(4) == "ON")
+    {
+      ledOn();
+    }
+    else if (command.substring(4) == "OFF")
+    {
+      ledOff();
+    }
+    else if (command.startsWith("LED BLINK"))
+    {
+      int delayTime = DEFAULT_BLINK_TIME;
+      if (command.length() > 10)
+      {
+        delayTime = command.substring(10).toInt();
+      }
+      blinkFront(delayTime);
+    }
+    else if (command == "LED FADE BLUE")
+    {
+      fadeEffect(PIN_LED_BLUE);
+    }
+    else if (command == "LED FADE GREEN")
+    {
+      fadeEffect(PIN_LED_GREEN);
+    }
+    else if (command == "LED FADE RED")
+    {
+      fadeEffect(PIN_LED_RED);
+    }
+  }
+  else if (command.startsWith("CYCLE"))
+  {
+    String params[4];
+    int paramCount = 0;
+    int lastIndex = 0;
+    for (int i = 0; i < command.length(); i++)
+    {
+      if (command.charAt(i) == ' ' || i == command.length() - 1)
+      {
+        params[paramCount++] = command.substring(lastIndex, i == command.length() - 1 ? i + 1 : i);
+        lastIndex = i + 1;
+      }
+    }
+    if (paramCount == 4)
+    {
+      bool isCooling = params[1] == "COOL";
+      int intensity = params[2].toInt();
+      int duration = params[3].toInt();
+      runThermalCycle(isCooling, intensity, duration);
+    }
+  }
+  else if (command == "STATUS")
+  {
+    sendStatus();
+  }
+  else if (command == "STOPCOOL")
+  {
+    stopCooling();
+  }
+  else if (command == "STOPHEAT")
+  {
+    stopHeating();
+  }
+  else if (command == "HELP")
+  {
+    printHelp();
+  }
+  else
+  {
+    Serial.println("Unknown command");
+    _currentCommand = ""; // Clear the current command
   }
 }
