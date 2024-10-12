@@ -79,6 +79,9 @@ public:
 	void stopCooling();
 	void stopHeating();
 
+	void continueCooling(uint8_t intensity);
+	void continueHeating(uint8_t intensity);
+
 	void ledAction(const String &command);
 
 	// For USB:
@@ -89,7 +92,6 @@ public:
 
 	// Main loop:
 	void runFirmware(); // For Mk 1 Alpha testing
-	void processCommand(const String &command);
 	void executeCommand(const String &command);
 	void stopCommand();
 
