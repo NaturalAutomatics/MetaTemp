@@ -47,6 +47,11 @@ Note: Pins 9, 10, and 11 support PWM for LED brightness control
 #ifndef KELVIN_VR_H
 #define KELVIN_VR_H
 
+#define MIN_BRIGHTNESS 0
+#define MAX_BRIGHTNESS 255
+#define MAX_INTENSITY 255
+#define DEFAULT_BLINK_TIME 1000
+#define FADE_DELAY_TIME 30
 #define DEFAULT_BAUD_RATE 115200
 
 #include <Arduino.h>
@@ -74,6 +79,9 @@ public:
 	void stopCooling();
 	void stopHeating();
 
+	void continueCooling(uint8_t intensity);
+	void continueHeating(uint8_t intensity);
+
 	void ledAction(const String &command);
 
 	// For USB:
@@ -84,9 +92,14 @@ public:
 
 	// Main loop:
 	void runFirmware(); // For Mk 1 Alpha testing
+	void executeCommand(const String &command);
+	void stopCommand();
 
 protected:
 	String _modelName;
+
+	// To run commands:
+	String _currentCommand;
 
 	// LED pins
 	static const uint8_t PIN_LED_GREEN = 10;
