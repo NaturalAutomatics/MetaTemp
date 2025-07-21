@@ -1,6 +1,6 @@
 @echo off
-set SOURCE="C:\Users\Alex\Documents\Work\Natural Automatics\MetaTemp-git\MetaTempUnit\Hardware\library\KelvinVR"
-set DEST="C:\Users\Alex\Documents\Arduino\libraries\KelvinVR"
+set SOURCE="C:\Users\Alex\OneDrive\Документы\Work\Natural Automatics\MetaTemp-git\MetaTempUnit\Hardware\library\KelvinVR"
+set DEST="C:\Users\Alex\OneDrive\Документы\Arduino\libraries\KelvinVR"
 
 echo Copying KelvinVR library...
 

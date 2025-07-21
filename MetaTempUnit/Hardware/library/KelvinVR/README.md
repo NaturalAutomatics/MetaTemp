@@ -1,82 +1,54 @@
 # KelvinVR Library
+Arduino library for precise control of Peltier elements using L293D motor driver
 
-## Overview
-
-KelvinVR is a versatile library designed for Arduino and ESP32 platforms, providing functionality for [brief description of what the library does, e.g., "controlling VR-related hardware components"]. This library is compatible with various Arduino boards (including Uno and Mega) as well as ESP32, making it flexible for different project requirements.
+![L293D Peltier Control](https://github.com/yourusername/KelvinVR/raw/main/assets/circuit_diagram.png)  
+*(Include a circuit diagram Fritzing file in your repository)*
 
 ## Features
-
-- Cross-platform support (Arduino and ESP32)
-- [List key features of the library]
-- Easy-to-use API for [main functionalities]
-- [Any other notable features]
+- 📶 Bidirectional control (heating/cooling) for two Peltier elements
+- 🎚️ Analog PWM control (0-100% power levels)
+- 🛡️ Shoot-through protection during direction changes
+- 🔌 Hardware-optimized for L293D motor driver
+- 📡 Simple serial command interface
+- 🔥 Thermal protection framework (user-extendable)
 
 ## Installation
+1. Download the latest release as ZIP
+2. In Arduino IDE:  
+   **Sketch → Include Library → Add .ZIP Library...**
+3. Select the downloaded ZIP file
+4. Restart Arduino IDE
 
-1. Download the KelvinVR library (either clone this repository or download as ZIP)
-2. In the Arduino IDE, go to Sketch > Include Library > Add .ZIP Library
-3. Select the downloaded KelvinVR folder or ZIP file
-4. The library is now installed and ready to use
+## Hardware Setup
+**L293D Connections:**
+| L293D Pin | Arduino Mega Pin | Function          |
+|-----------|------------------|-------------------|
+| EN1       | 9 (PWM)          | Peltier 1 Enable  |
+| IN1       | 8                | Peltier 1 Phase   |
+| IN2       | 7                | Peltier 1 Phase   |
+| EN2       | 10 (PWM)         | Peltier 2 Enable  |
+| IN3       | 12               | Peltier 2 Phase   |
+| IN4       | 11               | Peltier 2 Phase   |
 
-## Usage
+**Power Requirements:**
+- Logic voltage (VCC1): 5V from Arduino
+- Motor voltage (VCC2): 7-12V external supply (match Peltier rating)
+- Common ground between Arduino and power supply
 
-To use the KelvinVR library in your sketch:
-
-1. Include the library header:
-   ```cpp
-   #include <KelvinVR.h>
-   ```
-
-## Create an instance of the KelvinVR class:
+## Basic Usage
 ```cpp
-KelvinVR kelvinVR;
-```
+#include <KelvinVR.h>
 
+// Initialize Peltiers (EN, IN1, IN2)
+KelvinVR peltier1(9, 8, 7);  // Channel 1
+KelvinVR peltier2(10, 12, 11); // Channel 2
 
-
-## Initialize the library in your setup() function:
-```cpp
 void setup() {
-  kelvinVR.begin();
+  Serial.begin(9600);
+  peltier1.setPower(0); // Initialize off
+  peltier2.setPower(0);
 }
-```
 
-## Use the library functions in your loop() or other functions:
-```cpp
 void loop() {
-  kelvinVR.update();
-  // Other code using KelvinVR functions
+  // Your control logic here
 }
-```
-
-## Examples
-The library comes with several example sketches demonstrating its usage:
-
-BasicExample: Demonstrates basic functionality of the library
-
-LEDTest: Shows how to control LEDs using the library
-
-List other examples
-
-To access the examples, go to File > Examples > KelvinVR in the Arduino IDE.
-
-## Platform-Specific Considerations
-For Arduino boards: Any specific considerations or limitations
-
-For ESP32: Any specific features or usage notes
-
-Contributing
-Contributions to the KelvinVR library are welcome. Please feel free to submit pull requests, create issues or suggest improvements.
-
-## License
-Specify the license under which the library is released, e.g., MIT License, GNU GPL, etc.
-
-## Contact
-Natural Automatics Laboratories
-Created by Alexander Noyanov: alex.noyanov.usa@gmail.com
-
-
-
-This README provides a good starting point for documenting your KelvinVR library. You should customize it further based on the specific features and functionalities of your library. Add more detailed usage instructions, API documentation, or any other relevant information that users of your library would find helpful.
-
-Remember to update the README as you develop and expand the library's capabilities. Good documentation is key to making your library accessible and easy to use for other developers.
